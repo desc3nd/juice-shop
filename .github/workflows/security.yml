@@ -16,12 +16,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # KROK 1: Instalacja środowiska Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Juice Shop wymaga nowszej wersji Node.js
+
+      # KROK 2: Instalacja bibliotek (to stworzy node_modules)
+      - name: Install dependencies
+        run: npm install --package-lock-only # Szybsza wersja, która generuje drzewo zależności
+
+      # KROK 3: Teraz Snyk zadziała
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=high # Pipeline "wywali się" tylko przy poważnych dziurach
+          args: --severity-threshold=high
 
   # 2. SAST - Statyczna analiza kodu źródłowego
   static-analysis:
