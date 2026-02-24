@@ -20,11 +20,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Juice Shop wymaga nowszej wersji Node.js
+          node-version: '20' # Juice Shop wymaga nowszej wersji Node.js
 
       # KROK 2: Instalacja bibliotek (to stworzy node_modules)
       - name: Install dependencies
-        run: npm install --package-lock-only # Szybsza wersja, która generuje drzewo zależności
+        run: npm install --package-lock-only --no-scripts # Szybsza wersja, która generuje drzewo zależności
 
       # KROK 3: Teraz Snyk zadziała
       - name: Run Snyk to check for vulnerabilities
