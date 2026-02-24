@@ -1,0 +1,37 @@
+name: "DevSecOps Pipeline (SCA, SAST, DAST)"
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: # Pozwala uruchomić proces ręcznie
+
+jobs:
+  # 1. SCA - Skanowanie bibliotek (Software Composition Analysis)
+  dependency-check:
+    name: SCA (Snyk)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high # Pipeline "wywali się" tylko przy poważnych dziurach
+
+  # 2. SAST - Statyczna analiza kodu źródłowego
+  static-analysis:
+    name: SAST (Semgrep)
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        run: semgrep scan --config auto --error # --error sprawia, że błędy blokują pipeline
